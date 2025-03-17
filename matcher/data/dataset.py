@@ -3,6 +3,7 @@ from torchvision import transforms
 from torch.utils.data import DataLoader
 
 from .coco import DatasetCOCO
+from .coco_surg import DatasetCOCO_surg
 from .pascal import DatasetPASCAL
 from .fss import DatasetFSS
 from .paco_part import DatasetPACOPart
@@ -15,6 +16,10 @@ class FSSDataset:
     def initialize(cls, img_size, datapath, use_original_imgsize):
 
         cls.datasets = {
+            'endoscapes': DatasetCOCO_surg,
+            'cadis': DatasetCOCO_surg,
+            'c8k': DatasetCOCO_surg,
+            'hyperkvasir': DatasetCOCO_surg,
             'coco': DatasetCOCO,
             'pascal': DatasetPASCAL,
             'fss': DatasetFSS,
@@ -38,7 +43,9 @@ class FSSDataset:
         shuffle = split == 'trn'
         nworker = nworker if split == 'trn' else 0
 
-        dataset = cls.datasets[benchmark](cls.datapath, fold=fold, transform=cls.transform, split=split, shot=shot, use_original_imgsize=cls.use_original_imgsize)
+        dataset = cls.datasets[benchmark](cls.datapath, fold=fold, benchmark=benchmark,
+                transform=cls.transform, split=split, shot=shot,
+                use_original_imgsize=cls.use_original_imgsize)
         dataloader = DataLoader(dataset, batch_size=bsz, shuffle=shuffle, num_workers=nworker)
 
         return dataloader

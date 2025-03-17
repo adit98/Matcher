@@ -35,3 +35,12 @@ model_ts*.txt
 .idea
 .vscode
 _darcs
+
+# output logs
+output
+
+# model checkpoints
+models
+
+# datasets
+datasets

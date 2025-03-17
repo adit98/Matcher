@@ -229,9 +229,12 @@ class Matcher:
             select_point_labels=label_list,
             select_box=[box] if self.use_box else None,
         )
-        tar_masks = torch.cat(
-            [torch.from_numpy(qmask['segmentation']).float()[None, None, ...].to(self.device) for
-             qmask in tar_masks_ori], dim=0).cpu().numpy() > 0
+        tar_masks_list = [torch.from_numpy(qmask['segmentation']).float()[None, None, ...].to(self.device) for
+             qmask in tar_masks_ori]
+        if len(tar_masks_list) > 0:
+            tar_masks = torch.cat(tar_masks_list , dim=0).cpu().numpy() > 0
+        else:
+            tar_masks = np.zeros((1, 1, 518, 518)).astype(bool)
 
         # append to original results
         purity = torch.zeros(tar_masks.shape[0])
@@ -453,7 +456,8 @@ def build_matcher_oss(args):
     )
     dinov2 = vits.__dict__[args.dinov2_size](**dinov2_kwargs)
 
-    dinov2_utils.load_pretrained_weights(dinov2, args.dinov2_weights, "teacher")
+    dinov2_weights = args.dinov2_weights.format(args.benchmark)
+    dinov2_utils.load_pretrained_weights(dinov2, dinov2_weights, "teacher")
     dinov2.eval()
     dinov2.to(device=args.device)
 
