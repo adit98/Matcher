@@ -37,10 +37,10 @@ model_ts*.txt
 _darcs
 
 # output logs
-output
+/output
 
 # model checkpoints
-models
+/models
 
 # datasets
-datasets
+/datasets
